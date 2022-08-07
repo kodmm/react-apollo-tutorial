@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 
 const CREATE_LINK_MUTATION = gql`
   mutation LinkMutation(
-    $input: NewLink!,
+    $description: String!
+    $url: String!
   ) {
-    createLink(input: $input) {
+    createLink(description: $description, url: $url) {
         id
-        title
-        address
+        description
+        url
     }
   }
 `;
@@ -18,13 +19,14 @@ const CreateLink = () => {
     const navigate = useNavigate();
 
     const [formState, setFormState] = useState({
-        title: '',
-        address: '',
+        description: '',
+        url: '',
     });
 
     const [createLink, {data, loading, error}] = useMutation(CREATE_LINK_MUTATION, {
         variables: {
-            input: formState,
+           description: formState.description,
+           url: formState.url
         },
         onCompleted: () => navigate('/')
     });
@@ -41,11 +43,11 @@ const CreateLink = () => {
                 <div className="flex flex-column mt3">
                     <input 
                         className="mb2"
-                        value={formState.title}
+                        value={formState.description}
                         onChange={(e) => 
                             setFormState({
                                 ...formState,
-                                title: e.target.value 
+                                description: e.target.value 
                             })
                         }
                         type="input"
@@ -53,11 +55,11 @@ const CreateLink = () => {
                     />
                     <input
                         className="mb2"
-                        value={formState.address}
+                        value={formState.url}
                         onChange={(e) =>
                         setFormState({
                             ...formState,
-                            address: e.target.value
+                            url: e.target.value
                         })
                         }
                         type="text"

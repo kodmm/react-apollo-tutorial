@@ -5,7 +5,7 @@ const Link = (props) => {
     return (
         <div>
             <div>
-                {link.title} ({link.address})
+                {link.description} ({link.url})
             </div>
         </div>
 

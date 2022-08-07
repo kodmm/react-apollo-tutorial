@@ -1,25 +1,31 @@
-import { useMutation, gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_TOKEN } from '../constants';
-const CREATE_USER_MUTATION = gql`
-  mutation CreateUserMutation(
-    $input: NewUser!
-  ) {
-    createUser(
-      input: $input
+
+
+const SIGNUP_MUTATION = gql`
+  mutation SignupMutation(
+    $email: String!
+    $password: String!
+    $name: String!
+  ){
+    signup(
+      email: $email
+      password: $password
+      name: $name
     ) {
       token
     }
   }
 `;
 
-
 const LOGIN_MUTATION = gql`
   mutation LoginMutation(
-    $input: Login!
+    $email: String!
+    $password: String!
   ) {
-    login(input: $input) {
+    login(email: $email, password: $password) {
       token
     }
   }
@@ -29,16 +35,15 @@ const Login = () => {
   const navigate = useNavigate();
   const [formState, setFormState] = useState({
     login: true,
-    username: '',
+    email: '',
     password: '',
+    name: ''
   });
 
   const [login] = useMutation(LOGIN_MUTATION, {
     variables: {
-      input: { username: formState.username, password: formState.password }
-    },
-    onError: (error) => {
-      console.log(error.message)
+      email: formState.email,
+      password: formState.password
     },
     onCompleted: ({ login }) => {
       localStorage.setItem(AUTH_TOKEN, login.token);
@@ -46,20 +51,17 @@ const Login = () => {
     }
   });
 
-  const [createUser] = useMutation(CREATE_USER_MUTATION, {
+  const [signup] = useMutation(SIGNUP_MUTATION, {
     variables: {
-      input: { username: formState.username, password: formState.password }
+      name: formState.name,
+      email: formState.email,
+      password: formState.password
     },
-    onError: (error) => {
-      console.log(error.message)
-    },
-    onCompleted: ({ createUser }) => {
-      localStorage.setItem(AUTH_TOKEN, createUser.token);
+    onCompleted: ({ signup }) => {
+      localStorage.setItem(AUTH_TOKEN, signup.token);
       navigate('/');
     }
   });
-
-
 
   return (
     <div>
@@ -67,16 +69,29 @@ const Login = () => {
         {formState.login ? 'Login' : 'Sign Up'}
       </h4>
       <div className="flex flex-column">
+        {!formState.login && (
+          <input
+            value={formState.name}
+            onChange={(e) =>
+              setFormState({
+                ...formState,
+                name: e.target.value
+              })
+            }
+            type="text"
+            placeholder="Your name"
+          />
+        )}
         <input
-          value={formState.username}
+          value={formState.email}
           onChange={(e) =>
             setFormState({
               ...formState,
-              username: e.target.value
+              email: e.target.value
             })
           }
           type="text"
-          placeholder="Your username address"
+          placeholder="Your email address"
         />
         <input
           value={formState.password}
@@ -93,7 +108,7 @@ const Login = () => {
       <div className="flex mt3">
         <button
           className="pointer mr2 button"
-          onClick={formState.login ? login : createUser }
+          onClick={() => console.log('onClick')}
         >
           {formState.login ? 'login' : 'create account'}
         </button>

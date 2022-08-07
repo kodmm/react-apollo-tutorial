@@ -4,17 +4,20 @@ import Link from './Link';
 
 const LINK_QUERY = gql`
   {
-    links {
-      title
-      address
+    feed {
       id
+      links {
+        id
+        createdAt
+        url
+        description
+      }
     }
   }
 `
 ;
 
 const LinkList = () => {
-    
   const { loading, error, data } = useQuery(LINK_QUERY); 
   console.log("------")
   console.log(data)
@@ -23,7 +26,7 @@ const LinkList = () => {
 
   return (
     <div>
-      {data.links.map((link) => (
+      {data.feed.links.map((link) => (
         <Link key={link.id} link={link} />
       ))}
     </div>
