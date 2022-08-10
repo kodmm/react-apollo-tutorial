@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 import Link from './Link';
 
-const LINK_QUERY = gql`
+export const FEED_QUERY = gql`
   {
     feed {
       id
@@ -11,6 +11,16 @@ const LINK_QUERY = gql`
         createdAt
         url
         description
+        postedBy {
+          id
+          name
+        }
+        votes {
+          id
+          user {
+            id
+          }
+        }
       }
     }
   }
@@ -18,16 +28,14 @@ const LINK_QUERY = gql`
 ;
 
 const LinkList = () => {
-  const { loading, error, data } = useQuery(LINK_QUERY); 
-  console.log("------")
-  console.log(data)
+  const { loading, error, data } = useQuery(FEED_QUERY); 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :</p>;
+  if (error) return <p>Error : -----{error.graphQLErrors}</p>;
 
   return (
     <div>
-      {data.feed.links.map((link) => (
-        <Link key={link.id} link={link} />
+      {data.feed.links.map((link, index) => (
+        <Link key={link.id} link={link} index={index}/>
       ))}
     </div>
   );
