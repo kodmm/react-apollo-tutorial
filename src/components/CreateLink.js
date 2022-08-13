@@ -31,8 +31,17 @@ const CreateLink = () => {
            url: formState.url
         },
         update: (cache, { data: { post }}) => {
+            const take = LINKS_PER_PAGE;
+            const skip = 0;
+            const orderBy = {createdAt: 'desc'};
+
             const { feed } = cache.readQuery({
-                query: FEED_QUERY
+                query: FEED_QUERY,
+                variables: {
+                    take,
+                    skip,
+                    orderBy
+                }
             });
             console.log(feed)
             
@@ -43,6 +52,11 @@ const CreateLink = () => {
                         links: [post, ...feed.links]
                     }
                 },
+                variables: {
+                    take,
+                    skip,
+                    orderBy
+                }
             });
         },
         onCompleted: () => navigate('/')
